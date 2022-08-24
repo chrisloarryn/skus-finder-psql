@@ -30,7 +30,8 @@ jobs:
 
       - name: Install mockgen
         run: |
-          go install github.com/golang/mock/mockgen
+          go get github.com/golang/mock/mockgen@v1.6.0
+#          go install github.com/golang/mock/mockgen
 
       - name: Give permission
         run: |
