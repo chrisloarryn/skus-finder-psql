@@ -41,6 +41,13 @@ DB_PASSWORD=postgres
 - The designed endpoints must use proper HTTP verb, REST naming conventions and return correct HTTP code.
 - The application must not expose technology detail, such as language, framework, libraries, and so on, when an exception is thrown.
 
+| SKU           | Name                       | Brand       | Size | Price     | Image URLs |
+|---------------|----------------------------|-------------|------|-----------|------------|
+| FAL-8406270   | 500 Zapatilla Urbana Mujer | New Balance | 37   | 42990.00  | - https:// |
+| FAL-881952283 | Bicicleta Baltoro Aro 29   | Jeep        | ST   | 399990.00 | - https:// |
+| FAL-881898502 | Camisa Manga Corta Hombre  | Basement    | M    | 24990.00  | - https:// |
+
+
 ### Technology Required
 
 - [x] Golang
