@@ -67,9 +67,9 @@ DB_PASSWORD=postgres
 - [x] Golang
 - [x] Go mod
 - [x] Gin Framework
-- [ ] Gorm
+- [x] Gorm
 - [ ] Database persistence
-- [ ] Unit testing
+- [x] Unit testing
 
 #### extras
 
@@ -86,9 +86,10 @@ DB_PASSWORD=postgres
 
 ### Endpoints detailed (common REST API)
 
-- GET /products: Show all products stored.
-- POST /products: Allow to create a product.
-- GET /products/{productSKU}: Get details for a specific product by its product sku.
-- PATCH /products/{productSKU}: Update a specific product by its product sku.
-- DELETE /products/{productSKU}: Delete a specific product by its product sku.
+- GET /ping: returns a "pong" message
+- GET /api/v1/products: Show all products stored.
+- POST /api/v1/products: Allow to create a product.
+- GET /api/v1/products/{productSKU}: Get details for a specific product by its product sku.
+- PATCH /api/v1/products/{productSKU}: Update a specific product by its product sku.
+- DELETE /api/v1/products/{productSKU}: Delete a specific product by its product sku.
     
