@@ -14,10 +14,10 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
     ports:
-        - "65432:5432"
+      - "65432:5432"
     volumes:
-        - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
-        #- "./data:/var/lib/postgresql/data:rw"
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      #- "./data:/var/lib/postgresql/data:rw"
 #  admin:
 #    image: adminer
 #    ports:

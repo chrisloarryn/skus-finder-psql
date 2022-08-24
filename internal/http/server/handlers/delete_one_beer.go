@@ -7,27 +7,26 @@ import (
 	"net/http"
 )
 
-type FindOneProductHandler struct {
-	uc *usecases.FinderProductsBySKU
+type DeleteOneProductHandler struct {
+	uc *usecases.EliminatorProductsBySKU
 }
 
-func NewFindOneProductHandler(container dependencies.Container) *FindOneProductHandler {
-	return &FindOneProductHandler{
-		uc: usecases.NewFinderProductsBySKU(container.ProductsRepository()),
+func NewDeleteOneProductHandler(container dependencies.Container) *DeleteOneProductHandler {
+	return &DeleteOneProductHandler{
+		uc: usecases.NewEliminatorProductsBySKU(container.ProductsRepository()),
 	}
 }
 
-func (handler *FindOneProductHandler) FindOneProduct(ctx *gin.Context) {
+func (handler *DeleteOneProductHandler) DeleteOneProduct(ctx *gin.Context) {
 	productSKU := ctx.Param("productSKU")
 	if len(productSKU) == 0 {
 		formatResponse(ctx, http.StatusBadRequest, "product sku not provided", nil)
 		return
 	}
-	product, err := handler.uc.Execute(ctx, productSKU)
+	ok, err := handler.uc.Execute(ctx, productSKU)
 	if err != nil {
 		formatResponse(ctx, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
-
-	formatResponse(ctx, http.StatusOK, "ok", product)
+	formatResponse(ctx, http.StatusOK, "ok", ok)
 }

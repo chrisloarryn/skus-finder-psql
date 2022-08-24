@@ -38,7 +38,7 @@ func (repository *Repository) SaveProduct(_ context.Context, p products.Product)
 
 	_, exist := repository.list[p.Sku]
 	if exist {
-		return fmt.Errorf("the product ID already exists")
+		return fmt.Errorf("the product SKU already exists")
 	}
 	repository.list[p.Sku] = p
 	return nil
@@ -49,19 +49,28 @@ func (repository *Repository) UpdateProduct(_ context.Context, p products.Produc
 
 	_, exist := repository.list[p.Sku]
 	if !exist {
-		return products.Product{}, fmt.Errorf("the product ID does not exists")
+		return products.Product{}, fmt.Errorf("the product SKU does not exists")
 	}
 	repository.list[p.Sku] = p
 	return p, nil
 }
 
 func (repository *Repository) DeleteProductBySKU(_ context.Context, prodSKU string) (bool, error) {
+	var found bool
 	for key, _ := range repository.list {
+		fmt.Println(key, prodSKU)
 		if key == prodSKU {
+			found = true
 			delete(repository.list, prodSKU)
 		}
 	}
-	return false, fmt.Errorf("product ID doesn't exist")
+
+	fmt.Println("FOUND", found)
+	if found {
+		return true, nil
+	} else {
+		return false, fmt.Errorf("product SKU doesn't exist")
+	}
 }
 
 func NewInMemoryRepository() products.Repository {

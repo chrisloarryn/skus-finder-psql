@@ -21,14 +21,14 @@ func NewCreateProductHandler(container dependencies.Container) *CreateProductHan
 func (handler *CreateProductHandler) CreateProduct(ctx *gin.Context) {
 	product := products.Product{}
 	if err := ctx.BindJSON(&product); err != nil {
-		ctx.JSON(http.StatusBadRequest, err.Error())
+		formatResponse(ctx, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
 
 	err := handler.uc.Execute(ctx, product)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err.Error())
+		formatResponse(ctx, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
-	ctx.Status(http.StatusCreated)
+	formatResponse(ctx, http.StatusOK, "ok", product)
 }

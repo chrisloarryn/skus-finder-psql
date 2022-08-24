@@ -21,14 +21,14 @@ func NewUpdateProductHandler(container dependencies.Container) *UpdateProductHan
 func (handler *UpdateProductHandler) UpdateProduct(ctx *gin.Context) {
 	product := products.Product{}
 	if err := ctx.BindJSON(&product); err != nil {
-		ctx.JSON(http.StatusBadRequest, err.Error())
+		formatResponse(ctx, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
 
 	resProd, err := handler.uc.Execute(ctx, product)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err.Error())
+		formatResponse(ctx, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
-	ctx.JSON(http.StatusOK, resProd)
+	formatResponse(ctx, http.StatusOK, "ok", resProd)
 }

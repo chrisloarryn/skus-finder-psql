@@ -20,10 +20,15 @@ func NewFindAllProductsHandler(container dependencies.Container) *FindAllProduct
 func (handler *FindAllProductsHandler) GetAllProducts(ctx *gin.Context) {
 	products, err := handler.uc.Execute(ctx)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err.Error())
+		formatResponse(ctx, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
-	ctx.JSON(http.StatusOK, products)
+
+	if len(products) == 0 {
+		formatResponse(ctx, http.StatusNoContent, "ok", nil)
+	}
+
+	formatResponse(ctx, http.StatusOK, "ok", products)
 
 }
 
