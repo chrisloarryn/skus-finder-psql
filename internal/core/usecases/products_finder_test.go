@@ -22,7 +22,6 @@ func TestFinderAllProducts_Execute_ShouldReturnsAProductList(t *testing.T) {
 	repository := productsmocks.NewMockRepository(controller)
 	productsList := []products.Product{
 		{
-			ID:             123,
 			Sku:            "213321123123",
 			Name:           "product",
 			Size:           commons.StringPointer("XL"),

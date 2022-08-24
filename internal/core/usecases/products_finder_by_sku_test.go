@@ -20,7 +20,6 @@ func TestFinderProductBySKU_Execute_ShouldReturnsAProductData(t *testing.T) {
 
 	productSKU := "213321123123"
 	productResult := products.Product{
-		ID:             123,
 		Sku:            "213321123123",
 		Name:           "product",
 		Size:           commons.StringPointer("XL"),
