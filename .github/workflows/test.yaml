@@ -34,8 +34,8 @@ jobs:
 
       - name: Give permission
         run: |
-          chmod +x ./ci/test.sh
-          chmod +x ./ci/check_panic_handling.sh
+          chmod 777 ./ci/test.sh
+          chmod 777 ./ci/check_panic_handling.sh
 
       - name: Run test script
         run: |
