@@ -62,7 +62,7 @@ DB_PASSWORD=postgres
 
 - GET /products: Show all products stored.
 - POST /products: Allow to create a product.
-- GET /products/{productID}: Get details for a specific product by its product id.
-- PATCH /products/{productID}: Update a specific product by its product id.
-- DELETE /products/{productID}: Delete a specific product by its product id.
+- GET /products/{productSKU}: Get details for a specific product by its product sku.
+- PATCH /products/{productSKU}: Update a specific product by its product sku.
+- DELETE /products/{productSKU}: Delete a specific product by its product sku.
     
