@@ -21,7 +21,6 @@ func TestCreateProduct_Execute_ShouldCreateAProduct(t *testing.T) {
 	repository := productsmocks.NewMockRepository(controller)
 
 	newProduct := products.Product{
-		ID:             123,
 		Sku:            "213321123123",
 		Name:           "product",
 		Size:           commons.StringPointer("XL"),
@@ -47,7 +46,6 @@ func TestCreateProduct_Execute_ShouldReturnAnError(t *testing.T) {
 	// Setup
 	controller := gomock.NewController(t)
 	newProduct := products.Product{
-		ID:             123,
 		Sku:            "213321123123",
 		Name:           "product",
 		Size:           commons.StringPointer("XL"),
@@ -77,7 +75,6 @@ func TestCreateProduct_Execute_ShouldReturnAnErrorForInvalidNegative(t *testing.
 	// Setup
 	controller := gomock.NewController(t)
 	newProduct := products.Product{
-		ID:             123,
 		Sku:            "213321123123",
 		Name:           "product",
 		Size:           commons.StringPointer("XL"),
