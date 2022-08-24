@@ -1,5 +1,8 @@
 # skus-finder-psql
 
+[![Build Status][ci-badge]][ci-runs] [![Go Reference][reference-badge]][reference]
+
+
 ### Specifications
 ``To execute, needs:``
 
