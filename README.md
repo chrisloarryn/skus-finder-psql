@@ -7,7 +7,7 @@
 - docker desktop/docker
 
 ### Build and execution instructions
-~>```docker-compose up -d --build```<~
+```docker-compose up -d --build```
 
 | Command | Description                              |
 |---------|------------------------------------------|
