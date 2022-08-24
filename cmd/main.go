@@ -6,5 +6,5 @@ import (
 )
 
 func main() {
-	fmt.Sprintln("Running...")
+	fmt.Println("Running...")
 }
