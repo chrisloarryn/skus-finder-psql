@@ -3,17 +3,18 @@ package products
 import (
 	"context"
 	"fmt"
+	"github.com/jinzhu/gorm"
 )
 
 // Product represents the product data
 type Product struct {
-	ID             int       `json:"id"`
-	Sku            string    `json:"sku"`
-	Name           string    `json:"name"`
-	Size           *string   `json:"size"`
-	Price          float64   `json:"price"`
-	PrincipalImage *string   `json:"principal_image"`
-	OtherImages    []*string `json:"other_images"`
+	gorm.Model
+	Sku            string    `json:"sku" gorm:"type:varchar(50); not null"`
+	Name           string    `json:"name" gorm:"type:varchar(50); not null"`
+	Size           *string   `json:"size" gorm:"type:varchar(50)"`
+	Price          float64   `json:"price" gorm:"type:double precision;not null"`
+	PrincipalImage *string   `json:"principal_image" gorm:"type:varchar(50);not null"`
+	OtherImages    []*string `json:"other_images" gorm:"type:varchar(50)"`
 }
 
 // ValidateProductID just validates the ID value shouldn't be negative

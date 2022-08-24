@@ -5,6 +5,8 @@ go 1.18
 require (
 	github.com/gin-gonic/gin v1.8.1
 	github.com/golang/mock v1.6.0
+	github.com/jinzhu/gorm v1.9.16
+	github.com/lib/pq v1.10.6
 	github.com/stretchr/testify v1.8.0
 	github.com/validatecl/go-microservices-commons v1.0.14
 )
@@ -23,6 +25,7 @@ require (
 	github.com/goccy/go-json v0.9.7 // indirect
 	github.com/golang/protobuf v1.5.0 // indirect
 	github.com/gorilla/mux v1.7.3 // indirect
+	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
