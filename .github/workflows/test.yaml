@@ -31,7 +31,6 @@ jobs:
       - name: Install mockgen
         run: |
           go install github.com/golang/mock/mockgen
-          go install github.com/golang/mock/mockgen@v1.6.0
 
       - name: Run test script
         run: |
