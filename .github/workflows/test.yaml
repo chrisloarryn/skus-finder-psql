@@ -32,6 +32,11 @@ jobs:
         run: |
           go install github.com/golang/mock/mockgen
 
+      - name: Give permission
+        run: |
+          chmod +x ./ci/test.sh
+          chmod +x ./ci/check_panic_handling.sh
+
       - name: Run test script
         run: |
           ./ci/test.sh
