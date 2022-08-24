@@ -45,7 +45,7 @@ func (repository *Repository) newPostgresDB() {
 			log.Fatalf("can't open db: %v", err)
 		}
 
-		fmt.Println("conectado a postgres")
+		fmt.Println("connected to postgres")
 	})
 }
 
@@ -57,7 +57,7 @@ func (repository *Repository) newMySQLDB() {
 			log.Fatalf("can't open db: %v", err)
 		}
 
-		fmt.Println("conectado a mysql")
+		fmt.Println("connected to mysql")
 	})
 }
 
@@ -104,7 +104,7 @@ func (repository *Repository) SaveProduct(ctx context.Context, product products.
 	value := op.Value
 	err := op.Error
 
-	fmt.Println("%v, %v", value, err)
+	fmt.Printf("%v, %v\n", value, err)
 
 	return nil
 }
@@ -123,7 +123,7 @@ func (repository *Repository) UpdateProduct(ctx context.Context, product product
 	value := op.Value
 	err := op.Error
 
-	fmt.Println("%v, %v", value, err)
+	fmt.Printf("%v, %v\n", value, err)
 
 	return products.Product{}, nil
 }
