@@ -8,8 +8,10 @@ if [[ $(go version) != *"go1.18"* ]]; then
   exit 0
 fi
 
-for i in $(find $PWD -name go.mod); do
-  pushd $(dirname $i)
+# shellcheck disable=SC2044
+for i in $(find "$PWD" -name go.mod); do
+  # shellcheck disable=SC2046
+  pushd $(dirname "$i")
   go mod tidy
   popd
 done
@@ -30,10 +32,12 @@ function cleanup() {
 trap cleanup EXIT
 
 cp -r . "${TEMP_DIR}/"
-cd $TEMP_DIR
+cd "$TEMP_DIR"
 
-for i in $(find $PWD -name go.mod); do
-  pushd $(dirname $i)
+# shellcheck disable=SC2044
+for i in $(find "$PWD" -name go.mod); do
+  # shellcheck disable=SC2046
+  pushd $(dirname "$i")
   go generate ./...
   popd
 done
