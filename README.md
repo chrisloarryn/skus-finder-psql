@@ -6,6 +6,15 @@
 ### Development
 - docker desktop/docker
 
+### Build and execution instructions
+~>```docker-compose up -d --build```<~
+
+| Command | Description                              |
+|---------|------------------------------------------|
+| -d      | for detach and run API in the background |
+| --build | to force rebuild of api                  |
+
+
 ### Production
 ``a postgres db will be configured, otherwise take following default values:``
 ````shell
