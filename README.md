@@ -52,7 +52,7 @@ DB_PASSWORD=postgres
 
 - [x] Golang
 - [x] Go mod
-- [ ] Gin Framework
+- [x] Gin Framework
 - [ ] Gorm
 - [ ] Database persistence
 - [ ] Unit testing
