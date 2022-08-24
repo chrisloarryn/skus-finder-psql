@@ -21,7 +21,7 @@ DB_PASSWORD=postgres
 ``Designing and implementing an application that allows to store new product, list all of them, retrieve a product by its SKU, update it and delete it.
 ``
 
-### Descripción
+### Description
 
 ``The information of a product that we want to store is: ``
 
