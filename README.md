@@ -69,6 +69,7 @@ DB_PASSWORD=postgres
 - [x] Gin Framework
 - [x] Gorm
 - [ ] Database persistence
+- [x] InMemory persistence
 - [x] Unit testing
 
 #### extras
