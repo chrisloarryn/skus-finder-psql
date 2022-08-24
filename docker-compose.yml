@@ -1,0 +1,24 @@
+version: '3.1'
+
+services:
+  products-api:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: 8080
+  pgdb-dev:
+    image: postgres:14.0
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+        - "65432:5432"
+    volumes:
+        - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+        #- "./data:/var/lib/postgresql/data:rw"
+#  admin:
+#    image: adminer
+#    ports:
+#      - 8089:8080
