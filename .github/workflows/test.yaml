@@ -36,6 +36,8 @@ jobs:
         run: |
           chmod 777 ./ci/test.sh
           chmod 777 ./ci/check_panic_handling.sh
+          ls
+          pwd
 
       - name: Run test script
         run: |
