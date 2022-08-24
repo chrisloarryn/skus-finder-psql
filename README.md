@@ -1,6 +1,6 @@
 # skus-finder-psql
 
-[![Build Status][ci-badge]][ci-runs] [![Go Reference][reference-badge]][reference]
+[![Run tests](https://github.com/chrisloarryn/skus-finder-psql/actions/workflows/test.yaml/badge.svg)](https://github.com/chrisloarryn/skus-finder-psql/actions/workflows/test.yaml)
 
 
 ### Specifications
