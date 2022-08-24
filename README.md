@@ -65,7 +65,9 @@ DB_PASSWORD=postgres
 - [ ] Gorm
 - [ ] Database persistence
 - [ ] Unit testing
-
+#### extras
+- [x] gomock (for mocks generation) [[link]](https://github.com/golang/mock)
+- [x] testify (for assertions) [[link]](https://github.com/stretchr/testify)
 ### Deliverables
 
 - The only deliverable is the source code of the solution; it must be published at a GIT version control hosting such as: GitHub, GitLab, Bitbucket or other. The repository must have a
