@@ -25,10 +25,10 @@ func (handler *CreateProductHandler) CreateProduct(ctx *gin.Context) {
 		return
 	}
 
-	err := handler.uc.Execute(ctx, product)
+	prod, err := handler.uc.Execute(ctx, product)
 	if err != nil {
 		formatResponse(ctx, http.StatusInternalServerError, err.Error(), nil)
 		return
 	}
-	formatResponse(ctx, http.StatusOK, "ok", product)
+	formatResponse(ctx, http.StatusCreated, "ok", prod)
 }

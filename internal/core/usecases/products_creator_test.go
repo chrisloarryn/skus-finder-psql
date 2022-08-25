@@ -30,12 +30,12 @@ func TestCreateProduct_Execute_ShouldCreateAProduct(t *testing.T) {
 			commons.StringPointer("http://other_image.png"),
 		},
 	}
-	repository.EXPECT().SaveProduct(gomock.Any(), newProduct).Return(nil).Times(1)
+	repository.EXPECT().SaveProduct(gomock.Any(), newProduct).Return(newProduct, nil).Times(1)
 
 	createProductUseCase := usecases.NewCreateProduct(repository)
 
 	// Execute
-	err := createProductUseCase.Execute(context.TODO(), newProduct)
+	_, err := createProductUseCase.Execute(context.TODO(), newProduct)
 
 	// Verify
 	assert.NoError(t, err)
@@ -59,12 +59,12 @@ func TestCreateProduct_Execute_ShouldReturnAnError(t *testing.T) {
 
 	repository := productsmocks.NewMockRepository(controller)
 
-	repository.EXPECT().SaveProduct(gomock.Any(), newProduct).Return(customError).Times(1)
+	repository.EXPECT().SaveProduct(gomock.Any(), newProduct).Return(products.Product{}, customError).Times(1)
 
 	createProductUseCase := usecases.NewCreateProduct(repository)
 
 	// Execute
-	err := createProductUseCase.Execute(context.TODO(), newProduct)
+	_, err := createProductUseCase.Execute(context.TODO(), newProduct)
 
 	// Verify
 	assert.EqualError(t, err, customError.Error())
@@ -91,7 +91,7 @@ func TestCreateProduct_Execute_ShouldReturnAnErrorForInvalidNegative(t *testing.
 	createProductUseCase := usecases.NewCreateProduct(repository)
 
 	// Execute
-	err := createProductUseCase.Execute(context.TODO(), newProduct)
+	_, err := createProductUseCase.Execute(context.TODO(), newProduct)
 
 	// Verify
 	assert.EqualError(t, err, invalidPriceError.Error())

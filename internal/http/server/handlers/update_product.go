@@ -19,11 +19,20 @@ func NewUpdateProductHandler(container dependencies.Container) *UpdateProductHan
 }
 
 func (handler *UpdateProductHandler) UpdateProduct(ctx *gin.Context) {
+	productSKU := ctx.Param("productSKU")
+	if len(productSKU) == 0 {
+		formatResponse(ctx, http.StatusBadRequest, "product sku not provided", nil)
+		return
+	}
+	
 	product := products.Product{}
+
 	if err := ctx.BindJSON(&product); err != nil {
 		formatResponse(ctx, http.StatusBadRequest, err.Error(), nil)
 		return
 	}
+
+	product.Sku = productSKU
 
 	resProd, err := handler.uc.Execute(ctx, product)
 	if err != nil {

@@ -1,11 +1,12 @@
 package server
 
 import (
+	"net/http"
+	"os"
+
 	"github.com/gin-gonic/gin"
 	"github.com/skus-finder-psql/internal/http/server/handlers"
 	"github.com/skus-finder-psql/internal/infrastructure/dependencies"
-	"net/http"
-	"os"
 )
 
 type ServerHTTP struct {
@@ -38,7 +39,7 @@ func Run(container dependencies.Container) {
 
 	port := os.Getenv(PORT_KEY)
 
-	if port == "" {
+	if len(port) == 0 {
 		port = "8088"
 	}
 

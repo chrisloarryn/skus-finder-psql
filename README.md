@@ -9,6 +9,7 @@
 ### Development
 
 - docker desktop/docker
+- IMPORTANT: db should be executed before than api, because of migration run automatically on the init
 
 ### Build and execution instructions
 
@@ -68,9 +69,10 @@ DB_PASSWORD=postgres
 - [x] Go mod
 - [x] Gin Framework
 - [x] Gorm
-- [ ] Database persistence
+- [x] Database persistence
 - [x] InMemory persistence
 - [x] Unit testing
+- [ ] Validations of field size/length
 
 #### extras
 
