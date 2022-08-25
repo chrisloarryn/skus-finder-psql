@@ -37,10 +37,9 @@ func Run(container dependencies.Container) {
 	v1.PATCH("/products/:productSKU", updateProductHandler.UpdateProduct)
 	v1.DELETE("/products/:productSKU", deleteOneProductHandler.DeleteOneProduct)
 
-
 	port := os.Getenv(PORT_KEY)
 
-if len(port) == 0 {
+	if len(port) == 0 {
 		port = "8088"
 	}
 
