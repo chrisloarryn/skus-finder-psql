@@ -4,9 +4,18 @@ services:
   products-api:
     build: .
     ports:
-      - "8080:8080"
+      - "3000:8088"
     environment:
-      PORT: 8080
+      port: 8088
+      ENVIRONMENT: DEVELOPMENT
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    container_name: products-sku-api
+    depends_on:
+      - pgdb-dev
+
   pgdb-dev:
     image: postgres:14.0
     environment:
@@ -17,6 +26,7 @@ services:
       - "65432:5432"
     volumes:
       - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    container_name: product-sku-api-db
       #- "./data:/var/lib/postgresql/data:rw"
 #  admin:
 #    image: adminer

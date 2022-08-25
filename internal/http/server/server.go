@@ -5,10 +5,15 @@ import (
 	"github.com/skus-finder-psql/internal/http/server/handlers"
 	"github.com/skus-finder-psql/internal/infrastructure/dependencies"
 	"net/http"
+	"os"
 )
 
 type ServerHTTP struct {
 }
+
+const (
+	PORT_KEY = "PORT"
+)
 
 func Run(container dependencies.Container) {
 	r := gin.Default()
@@ -31,7 +36,13 @@ func Run(container dependencies.Container) {
 	v1.PATCH("/products/:productSKU", updateProductHandler.UpdateProduct)
 	v1.DELETE("/products/:productSKU", deleteOneProductHandler.DeleteOneProduct)
 
-	r.Run(":3000") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	port := os.Getenv(PORT_KEY)
+
+	if port == "" {
+		port = "8088"
+	}
+
+	r.Run(":" + port)
 }
 
 func pingpong(c *gin.Context) {
