@@ -10,6 +10,7 @@
 
 - docker desktop/docker
 - IMPORTANT: db should be executed before than api, because of migration run automatically on the init
+- PRODUCTION environment hard coded
 
 ### Build and execution instructions
 
