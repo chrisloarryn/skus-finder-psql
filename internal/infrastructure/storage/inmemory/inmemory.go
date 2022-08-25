@@ -32,16 +32,16 @@ func (repository *Repository) FindProductBySKU(_ context.Context, prodSKU string
 	return products.Product{}, fmt.Errorf("product ID doesn't exist")
 }
 
-func (repository *Repository) SaveProduct(_ context.Context, p products.Product) error {
+func (repository *Repository) SaveProduct(_ context.Context, p products.Product) (products.Product, error) {
 	p.CreatedAt = time.Now()
 	p.UpdatedAt = time.Now()
 
 	_, exist := repository.list[p.Sku]
 	if exist {
-		return fmt.Errorf("the product SKU already exists")
+		return products.Product{}, fmt.Errorf("the product SKU already exists")
 	}
 	repository.list[p.Sku] = p
-	return nil
+	return p, nil
 }
 
 func (repository *Repository) UpdateProduct(_ context.Context, p products.Product) (products.Product, error) {
@@ -58,14 +58,12 @@ func (repository *Repository) UpdateProduct(_ context.Context, p products.Produc
 func (repository *Repository) DeleteProductBySKU(_ context.Context, prodSKU string) (bool, error) {
 	var found bool
 	for key, _ := range repository.list {
-		fmt.Println(key, prodSKU)
 		if key == prodSKU {
 			found = true
 			delete(repository.list, prodSKU)
 		}
 	}
 
-	fmt.Println("FOUND", found)
 	if found {
 		return true, nil
 	} else {

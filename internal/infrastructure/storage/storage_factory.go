@@ -13,6 +13,9 @@ const (
 func New(environment string) products.Repository {
 	switch environment {
 	case PROD:
+		repository := &postgres.Repository{}
+		bd := repository.New(postgres.Postgres)
+		bd.AutoMigrate(&products.Product{})
 		return postgres.NewRepository()
 	default:
 		return inmemory.NewInMemoryRepository()

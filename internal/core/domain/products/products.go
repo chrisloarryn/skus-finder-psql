@@ -9,12 +9,12 @@ import (
 // Product represents the product data
 type Product struct {
 	gorm.Model
-	Sku            string    `json:"sku" gorm:"type:varchar(50); not null"`
-	Name           string    `json:"name" gorm:"type:varchar(50); not null"`
-	Size           *string   `json:"size" gorm:"type:varchar(50)"`
-	Price          float64   `json:"price" gorm:"type:double precision;not null"`
-	PrincipalImage *string   `json:"principal_image" gorm:"type:varchar(50);not null"`
-	OtherImages    []*string `json:"other_images" gorm:"type:varchar(50)"`
+	Sku            string    `gorm:"type:varchar(50); not null" json:"sku"`
+	Name           string    `gorm:"type:varchar(50); not null" json:"name"`
+	Size           *string   `gorm:"type:varchar(50)" json:"size"`
+	Price          float64   `gorm:"type:double precision;not null" json:"price"`
+	PrincipalImage *string   `gorm:"type:varchar(50);not null" json:"principal_image"`
+	OtherImages    []*string `gorm:"type:varchar(50)" json:"other_images"`
 }
 
 // ValidateProductID just validates the ID value shouldn't be negative
@@ -52,5 +52,5 @@ type Repository interface {
 	FindProductBySKU(ctx context.Context, productSKU string) (Product, error)
 	UpdateProduct(ctx context.Context, product Product) (Product, error)
 	DeleteProductBySKU(ctx context.Context, productSKU string) (bool, error)
-	SaveProduct(ctx context.Context, product Product) error
+	SaveProduct(ctx context.Context, product Product) (Product, error)
 }

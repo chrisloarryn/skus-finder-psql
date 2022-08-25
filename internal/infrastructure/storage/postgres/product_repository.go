@@ -2,11 +2,11 @@ package postgres
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"github.com/jinzhu/gorm"
-	_ "github.com/lib/pq"
 	"github.com/skus-finder-psql/internal/core/domain/products"
+	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 	"log"
 	"sync"
 	"time"
@@ -40,7 +40,7 @@ func (repository *Repository) New(d Driver) *gorm.DB {
 func (repository *Repository) newPostgresDB() {
 	once.Do(func() {
 		var err error
-		db, err = gorm.Open("postgres", pgDataSourceName)
+		db, err = gorm.Open(postgres.Open(pgDataSourceName)) //"postgres", pgDataSourceName)
 		if err != nil {
 			log.Fatalf("can't open db: %v", err)
 		}
@@ -52,7 +52,7 @@ func (repository *Repository) newPostgresDB() {
 func (repository *Repository) newMySQLDB() {
 	once.Do(func() {
 		var err error
-		db, err = gorm.Open("mysql", mysqlDataSourceName)
+		db, err = gorm.Open(mysql.Open(mysqlDataSourceName))
 		if err != nil {
 			log.Fatalf("can't open db: %v", err)
 		}
@@ -71,61 +71,119 @@ type Repository struct {
 }
 
 func (repository *Repository) FindAllProducts(ctx context.Context) ([]products.Product, error) {
-	productsRes := make([]products.Product, 0)
-	op := repository.DB().Find(productsRes)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
+	defer cancel()
 
-	val := op.Value
+	//repository.New(Postgres)
 
-	r, _ := json.Marshal(val)
-	fmt.Println(string(r))
+	var results []products.Product
 
-	return []products.Product{}, op.Error
+	// Get all records
+	res := repository.DB().Find(&results)
+	// SELECT * FROM users;
+	if err := res.Error; err != nil {
+		return []products.Product{}, fmt.Errorf("an error has ocurred: %s", err.Error())
+	}
+
+	return results, nil
 }
 
 func (repository *Repository) FindProductBySKU(ctx context.Context, prodSKU string) (products.Product, error) {
-	return products.Product{}, nil
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
+	defer cancel()
+
+	var result products.Product
+	res := repository.DB().Where("sku = ?", prodSKU).First(&result)
+	// SELECT * FROM users WHERE name = 'jinzhu' ORDER BY id LIMIT 1;
+
+	if err := res.Error; err != nil {
+		return products.Product{}, fmt.Errorf("an error has ocurred %s", err.Error())
+	}
+	// SELECT * FROM users WHERE id = 10;
+	return result, nil
 }
 
 func (repository *Repository) DeleteProductBySKU(ctx context.Context, prodSKU string) (bool, error) {
-	return false, nil
-}
-
-func (repository *Repository) SaveProduct(ctx context.Context, product products.Product) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
 	defer cancel()
-	select {
-	case <-time.After(1 * time.Second):
-		fmt.Println("overslept")
-	case <-ctx.Done():
-		fmt.Println(ctx.Err()) // prints "context deadline exceeded"
+
+	var found products.Product
+	resu := repository.DB().Where("sku = ?", prodSKU).First(&found)
+	// SELECT * FROM users WHERE name = 'jinzhu' ORDER BY id LIMIT 1;
+
+	//.Model(products.Product{Sku: p.Sku})
+
+	if err := resu.Error; err != nil {
+		if err.Error() != "record not found" {
+			return false, fmt.Errorf("an error has ocurred %s", err.Error())
+		}
 	}
-	op := repository.DB().Create(&product)
 
-	value := op.Value
-	err := op.Error
+	if found.ID == 0 {
+		return false, fmt.Errorf("sku does not exists")
+	}
 
-	fmt.Printf("%v, %v\n", value, err)
+	res := repository.DB().Where("sku = ?", prodSKU).Delete(products.Product{Sku: prodSKU})
 
-	return nil
+	if err := res.Error; err != nil {
+		return false, fmt.Errorf("an error has ocurred %s", err.Error())
+	}
+
+	return true, nil
 }
 
-func (repository *Repository) UpdateProduct(ctx context.Context, product products.Product) (products.Product, error) {
+func (repository *Repository) SaveProduct(ctx context.Context, p products.Product) (products.Product, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
 	defer cancel()
-	select {
-	case <-time.After(1 * time.Second):
-		fmt.Println("overslept")
-	case <-ctx.Done():
-		fmt.Println(ctx.Err()) // prints "context deadline exceeded"
+
+	var result products.Product
+	resu := repository.DB().Where("sku = ?", p.Sku).First(&result)
+	// SELECT * FROM users WHERE name = 'jinzhu' ORDER BY id LIMIT 1;
+
+	if err := resu.Error; err != nil {
+		if err.Error() != "record not found" {
+			return products.Product{}, fmt.Errorf("an error has ocurred %s", err.Error())
+		}
 	}
-	op := repository.DB().Create(&product)
 
-	value := op.Value
-	err := op.Error
+	if result.Sku == p.Sku {
+		return products.Product{}, fmt.Errorf("sku already exists")
+	}
 
-	fmt.Printf("%v, %v\n", value, err)
+	res := repository.DB().Create(&p)
 
-	return products.Product{}, nil
+	if err := res.Error; err != nil {
+		return products.Product{}, fmt.Errorf("an error has ocurred: %s", err.Error())
+	}
+
+	var afterSave products.Product
+	resul := repository.DB().Where("sku = ?", p.Sku).First(&afterSave)
+	// SELECT * FROM users WHERE name = 'jinzhu' ORDER BY id LIMIT 1;
+
+	if err := resul.Error; err != nil {
+		return products.Product{}, fmt.Errorf("an error has ocurred %s", err.Error())
+	}
+
+	return afterSave, nil
+}
+
+func (repository *Repository) UpdateProduct(ctx context.Context, p products.Product) (products.Product, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
+	defer cancel()
+
+	var result products.Product
+	resu := repository.DB().Where("sku = ?", p.Sku).First(&result)
+	// SELECT * FROM users WHERE name = 'jinzhu' ORDER BY id LIMIT 1;
+
+	if err := resu.Error; err != nil {
+		return products.Product{}, fmt.Errorf("an error has ocurred %s", err.Error())
+	}
+
+	if len(result.Sku) == 0 {
+		return products.Product{}, fmt.Errorf("sku does not exists")
+	}
+
+	return p, nil
 }
 
 func NewRepository() products.Repository {

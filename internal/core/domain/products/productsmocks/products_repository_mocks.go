@@ -81,11 +81,12 @@ func (mr *MockRepositoryMockRecorder) FindProductBySKU(arg0, arg1 interface{}) *
 }
 
 // SaveProduct mocks base method.
-func (m *MockRepository) SaveProduct(arg0 context.Context, arg1 products.Product) error {
+func (m *MockRepository) SaveProduct(arg0 context.Context, arg1 products.Product) (products.Product, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SaveProduct", arg0, arg1)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(products.Product)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // SaveProduct indicates an expected call of SaveProduct.

@@ -18,13 +18,13 @@ func NewCreateProduct(repository products.Repository) *CreateProduct {
 }
 
 // Execute finder in the repository of products
-func (prodCreator *CreateProduct) Execute(ctx context.Context, p products.Product) error {
+func (prodCreator *CreateProduct) Execute(ctx context.Context, p products.Product) (products.Product, error) {
 	if validateError := products.ValidateProduct(p); validateError != nil {
-		return validateError
+		return products.Product{}, validateError
 	}
-	err := prodCreator.productsRepository.SaveProduct(ctx, p)
+	pro, err := prodCreator.productsRepository.SaveProduct(ctx, p)
 	if err != nil {
-		return err
+		return products.Product{}, err
 	}
-	return nil
+	return pro, nil
 }
