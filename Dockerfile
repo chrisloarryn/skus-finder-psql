@@ -13,7 +13,7 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o /products-api cmd/main.go
+RUN GOARCH=amd64 GOOS=linux go build -o /products-api cmd/main.go
 
 ##
 ## Deploy

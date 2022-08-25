@@ -1,4 +1,4 @@
-version: '3.1'
+version: '3.9'
 
 services:
   products-api:
@@ -6,8 +6,12 @@ services:
     ports:
       - "3000:8088"
     environment:
-      port: 8088
+      PORT: 8088
       ENVIRONMENT: PRODUCTION
+      DB_HOST: postgres
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_PORT: 5432
     #      ENVIRONMENT: DEVELOPMENT
     deploy:
       replicas: 1
@@ -15,8 +19,10 @@ services:
         condition: on-failure
     container_name: products-sku-api
     depends_on:
-      - pgdb-dev
-  pgdb-dev:
+      - postgres
+    networks:
+      - some-net
+  postgres:
     image: postgres:14.0
     environment:
       POSTGRES_USER: postgres
@@ -24,11 +30,13 @@ services:
       POSTGRES_DB: postgres
     ports:
       - "65432:5432"
+    networks:
+      - some-net
     container_name: products-sku-api-db
     volumes:
-      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
-      #- "./data:/var/lib/postgresql/data:rw"
-#  admin:
-#    image: adminer
-#    ports:
-#      - 8089:8080
+      - ./data:/var/lib/postgresql/data
+       #- "./data:/var/lib/postgresql/data:rw"
+#      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+networks:
+  some-net:
+    driver: bridge
