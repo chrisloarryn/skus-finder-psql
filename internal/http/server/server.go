@@ -1,18 +1,19 @@
 package server
 
 import (
+	"net/http"
+	"os"
+
 	"github.com/gin-gonic/gin"
 	"github.com/skus-finder-psql/internal/http/server/handlers"
 	"github.com/skus-finder-psql/internal/infrastructure/dependencies"
-	"net/http"
-	"os"
 )
 
 type ServerHTTP struct {
 }
 
 const (
-	PORT = "PORT"
+	PORT_KEY = "PORT"
 )
 
 func Run(container dependencies.Container) {
@@ -36,10 +37,13 @@ func Run(container dependencies.Container) {
 	v1.PATCH("/products/:productSKU", updateProductHandler.UpdateProduct)
 	v1.DELETE("/products/:productSKU", deleteOneProductHandler.DeleteOneProduct)
 
-	port := os.Getenv(PORT)
-	if len(port) == 0 {
+
+	port := os.Getenv(PORT_KEY)
+
+if len(port) == 0 {
 		port = "8088"
 	}
+
 	r.Run(":" + port)
 }
 

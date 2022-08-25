@@ -20,11 +20,14 @@ RUN GOARCH=amd64 GOOS=linux go build -o /products-api cmd/main.go
 ##
 FROM gcr.io/distroless/base-debian10
 
+ARG port
+ENV PORT ${port}
+
 WORKDIR /
 
 COPY --from=build /products-api /products-api
 
-EXPOSE 8080
+EXPOSE ${PORT}
 
 USER nonroot:nonroot
 
