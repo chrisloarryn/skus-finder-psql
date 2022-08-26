@@ -73,7 +73,7 @@ DB_PASSWORD=postgres
 - [x] Database persistence
 - [x] InMemory persistence
 - [x] Unit testing
-- [ ] Validations of field size/length
+- [ ] Validations of field size/length PENDING [[proposal package]](github.com/go-ozzo/ozzo-validation/v4)
 
 #### extras
 
