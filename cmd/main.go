@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	_ "github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"github.com/skus-finder-psql/internal/http/server"
 	"github.com/skus-finder-psql/internal/infrastructure/dependencies"
 	"os"
@@ -11,9 +12,9 @@ import (
 func main() {
 	fmt.Println("Running...")
 
-	err := os.Setenv("ENVIRONMENT", "PRODUCTION")
-	if err != nil {
-		return
+	// load environment variables from .env file if environment is not set
+	if os.Getenv(dependencies.EnvironmentKey) == "" {
+		godotenv.Load()
 	}
 
 	container := dependencies.NewContainer()
