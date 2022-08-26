@@ -28,7 +28,7 @@
 
 ````shell
 DB_HOST=localhost
-DB_PORT=5432
+DB_PORT=65432/5432
 DB_DATABASE=postgres
 DB_USER=postgres
 DB_PASSWORD=postgres
