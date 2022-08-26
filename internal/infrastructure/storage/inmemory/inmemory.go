@@ -29,7 +29,7 @@ func (repository *Repository) FindProductBySKU(_ context.Context, prodSKU string
 			return prod, nil
 		}
 	}
-	return products.Product{}, fmt.Errorf("product ID doesn't exist")
+	return products.Product{}, fmt.Errorf("product SKU doesn't exist")
 }
 
 func (repository *Repository) SaveProduct(_ context.Context, p products.Product) (products.Product, error) {
