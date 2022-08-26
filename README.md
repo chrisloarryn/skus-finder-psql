@@ -9,8 +9,9 @@
 ### Development
 
 - docker desktop/docker
-- IMPORTANT: db should be executed before than api, because of migration run automatically on the init
-- PRODUCTION environment hard coded
+- For easy to use and easy to start, command to execute api will be describe below in the "Build and execution instructions" section.
+- NOW: if you do not want to use bd from docker compose, set environment variables in .env file (for running locally)
+
 
 ### Build and execution instructions
 
@@ -72,13 +73,14 @@ DB_PASSWORD=postgres
 - [x] Gorm
 - [x] Database persistence
 - [x] InMemory persistence
-- [x] Unit testing
-- [ ] Validations of field size/length
+- [x] Unit testing (PENDING IMPROVEMENTS)
+- [x] Validations of field size/length DONE [[proposal package\ done]](github.com/go-ozzo/ozzo-validation/v4)
 
 #### extras
 
 - [x] gomock (for mocks generation) [[link]](https://github.com/golang/mock)
 - [x] testify (for assertions) [[link]](https://github.com/stretchr/testify)
+- [x] ozzo-validation (for validations) [[link]](github.com/go-ozzo/ozzo-validation/v4)
 
 ### Deliverables
 

@@ -21,7 +21,8 @@ func TestUpdateProduct_Execute_ShouldUpdateAProduct(t *testing.T) {
 	repository := productsmocks.NewMockRepository(controller)
 
 	newProduct := products.Product{
-		Sku:            "213321123123",
+		Sku:            "FAL-1000009",
+		Brand:          "FAL",
 		Name:           "product",
 		Size:           commons.StringPointer("XL"),
 		Price:          1000.01,
@@ -47,16 +48,17 @@ func TestUpdateProduct_Execute_ShouldReturnAnError(t *testing.T) {
 	// Setup
 	controller := gomock.NewController(t)
 	newProduct := products.Product{
-		Sku:            "213321123123",
+		Sku:            "FAL-1000009",
+		Brand:          "FAL",
 		Name:           "product",
 		Size:           commons.StringPointer("XL"),
-		Price:          1000.01,
+		Price:          1.1,
 		PrincipalImage: commons.StringPointer("http://image.png"),
 		OtherImages: []*string{
 			commons.StringPointer("http://other_image.png"),
 		},
 	}
-	customError := fmt.Errorf("this is a custom error")
+	customError := fmt.Errorf("price: cannot be blank.")
 
 	repository := productsmocks.NewMockRepository(controller)
 
@@ -76,16 +78,17 @@ func TestUpdateProduct_Execute_ShouldReturnAnErrorForInvalidNegative(t *testing.
 	// Setup
 	controller := gomock.NewController(t)
 	newProduct := products.Product{
-		Sku:            "213321123123",
+		Sku:            "FAL-1000009",
+		Brand:          "FAL",
 		Name:           "product",
 		Size:           commons.StringPointer("XL"),
-		Price:          -1000.01,
+		Price:          -1.1,
 		PrincipalImage: commons.StringPointer("http://image.png"),
 		OtherImages: []*string{
 			commons.StringPointer("http://other_image.png"),
 		},
 	}
-	invalidPriceError := fmt.Errorf("invalid price")
+	invalidPriceError := fmt.Errorf("price: must be no less than 1.")
 
 	repository := productsmocks.NewMockRepository(controller)
 
