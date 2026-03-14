@@ -6,6 +6,7 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 
+	sharedconstants "github.com/skus-finder-psql/internal/shared/constants"
 	"github.com/skus-finder-psql/internal/shared/messages"
 	"gorm.io/gorm"
 )
@@ -32,7 +33,7 @@ func ValidateProductID(productSKU string) error {
 
 // ValidatePrice validates the price value
 func ValidatePrice(price float64) error {
-	if price < negativePriceThreshold {
+	if price < sharedconstants.NegativePriceThreshold {
 		return fmt.Errorf(messages.InvalidPrice)
 	}
 	return nil
@@ -41,12 +42,12 @@ func ValidatePrice(price float64) error {
 // ValidateProduct validates all field and required fields of product data
 func ValidateProduct(p Product) error {
 	err := validation.ValidateStruct(&p,
-		validation.Field(&p.Sku, validation.Required, validation.Length(skuMinLength, skuMaxLength), validation.Match(skuRegexp)),
+		validation.Field(&p.Sku, validation.Required, validation.Length(sharedconstants.ProductSKUMinLength, sharedconstants.ProductSKUMaxLength), validation.Match(sharedconstants.ProductSKURegexp)),
 
-		validation.Field(&p.Name, validation.Required, validation.Length(productTextMinLength, productTextMaxLength)),
-		validation.Field(&p.Brand, validation.Required, validation.Length(productTextMinLength, productTextMaxLength)),
-		validation.Field(&p.Price, validation.Required, validation.Min(productPriceMin), validation.Max(productPriceMax)),
-		validation.Field(&p.PrincipalImage, validation.Required, is.URL, validation.Required, validation.Length(productTextMinLength, productTextMaxLength)),
+		validation.Field(&p.Name, validation.Required, validation.Length(sharedconstants.ProductTextMinLength, sharedconstants.ProductTextMaxLength)),
+		validation.Field(&p.Brand, validation.Required, validation.Length(sharedconstants.ProductTextMinLength, sharedconstants.ProductTextMaxLength)),
+		validation.Field(&p.Price, validation.Required, validation.Min(sharedconstants.ProductPriceMin), validation.Max(sharedconstants.ProductPriceMax)),
+		validation.Field(&p.PrincipalImage, validation.Required, is.URL, validation.Required, validation.Length(sharedconstants.ProductTextMinLength, sharedconstants.ProductTextMaxLength)),
 	)
 
 	if err != nil {

@@ -110,6 +110,7 @@ Sample products:
 - Persistence abstraction through `products.Repository`
 - PostgreSQL persistence with Gorm
 - In-memory repository available for local development and tests
+- Shared literals are centralized in `internal/shared/constants` and `internal/shared/messages`
 - Unit tests based on `gomock` and `testify`
 
 ## Endpoints

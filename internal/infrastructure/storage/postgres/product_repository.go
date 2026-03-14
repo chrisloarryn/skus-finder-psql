@@ -9,6 +9,7 @@ import (
 	"sync"
 
 	"github.com/skus-finder-psql/internal/core/domain/products"
+	sharedconstants "github.com/skus-finder-psql/internal/shared/constants"
 	"github.com/skus-finder-psql/internal/shared/messages"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
@@ -61,7 +62,7 @@ func (repository *Repository) newPostgresDB() {
 		}
 		dbPort := os.Getenv(DB_PORT)
 		if len(dbPort) == 0 {
-			dbPort = defaultPostgresPort
+			dbPort = sharedconstants.PostgresDefaultPort
 		}
 		dbName := os.Getenv(DB_NAME)
 		if len(dbName) == 0 {
@@ -69,25 +70,25 @@ func (repository *Repository) newPostgresDB() {
 		}
 
 		// pgDataSourceName := "postgres://postgres:postgres@products-sku-api-db:65432/postgres?sslmode=disable"
-		pgDataSourceName := fmt.Sprintf(postgresDataSourceFormat, dbUser, dbPass, dbHost, dbPort, dbName)
+		pgDataSourceName := fmt.Sprintf(sharedconstants.PostgresDataSourceFormat, dbUser, dbPass, dbHost, dbPort, dbName)
 		db, err = gorm.Open(postgres.Open(pgDataSourceName)) //"postgres", pgDataSourceName)
 		if err != nil {
-			log.Fatalf(openDBErrorFormat, err)
+			log.Fatalf(sharedconstants.PostgresOpenDBErrorFormat, err)
 		}
 
-		fmt.Println(postgresConnectedMessage)
+		fmt.Println(sharedconstants.PostgresConnectedMessage)
 	})
 }
 
 func (repository *Repository) newMySQLDB() {
 	once.Do(func() {
 		var err error
-		db, err = gorm.Open(mysql.Open(defaultMySQLDataSourceName))
+		db, err = gorm.Open(mysql.Open(sharedconstants.PostgresDefaultMySQLDataSourceName))
 		if err != nil {
-			log.Fatalf(openDBErrorFormat, err)
+			log.Fatalf(sharedconstants.PostgresOpenDBErrorFormat, err)
 		}
 
-		fmt.Println(mysqlConnectedMessage)
+		fmt.Println(sharedconstants.MySQLConnectedMessage)
 	})
 }
 
@@ -101,7 +102,7 @@ type Repository struct {
 }
 
 func (repository *Repository) FindAllProducts(ctx context.Context) ([]products.Product, error) {
-	ctx, cancel := context.WithTimeout(ctx, queryTimeout)
+	ctx, cancel := context.WithTimeout(ctx, sharedconstants.PostgresQueryTimeout)
 	defer cancel()
 
 	var results []products.Product
@@ -116,11 +117,11 @@ func (repository *Repository) FindAllProducts(ctx context.Context) ([]products.P
 }
 
 func (repository *Repository) FindProductBySKU(ctx context.Context, prodSKU string) (products.Product, error) {
-	ctx, cancel := context.WithTimeout(ctx, queryTimeout)
+	ctx, cancel := context.WithTimeout(ctx, sharedconstants.PostgresQueryTimeout)
 	defer cancel()
 
 	var result products.Product
-	res := repository.DB().WithContext(ctx).Where(skuWhereClause, prodSKU).First(&result)
+	res := repository.DB().WithContext(ctx).Where(sharedconstants.PostgresSKUWhereClause, prodSKU).First(&result)
 
 	if err := res.Error; err != nil {
 		return products.Product{}, fmt.Errorf(messages.ErrorOccurredFormat, err.Error())
@@ -129,11 +130,11 @@ func (repository *Repository) FindProductBySKU(ctx context.Context, prodSKU stri
 }
 
 func (repository *Repository) DeleteProductBySKU(ctx context.Context, prodSKU string) (bool, error) {
-	ctx, cancel := context.WithTimeout(ctx, queryTimeout)
+	ctx, cancel := context.WithTimeout(ctx, sharedconstants.PostgresQueryTimeout)
 	defer cancel()
 
 	var found products.Product
-	resu := repository.DB().WithContext(ctx).Where(skuWhereClause, prodSKU).First(&found)
+	resu := repository.DB().WithContext(ctx).Where(sharedconstants.PostgresSKUWhereClause, prodSKU).First(&found)
 
 	if err := resu.Error; err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -145,7 +146,7 @@ func (repository *Repository) DeleteProductBySKU(ctx context.Context, prodSKU st
 		return false, fmt.Errorf(messages.SKUDoesNotExist)
 	}
 
-	res := repository.DB().WithContext(ctx).Where(skuWhereClause, prodSKU).Delete(products.Product{Sku: prodSKU})
+	res := repository.DB().WithContext(ctx).Where(sharedconstants.PostgresSKUWhereClause, prodSKU).Delete(products.Product{Sku: prodSKU})
 
 	if err := res.Error; err != nil {
 		return false, fmt.Errorf(messages.ErrorOccurredAltFormat, err.Error())
@@ -155,11 +156,11 @@ func (repository *Repository) DeleteProductBySKU(ctx context.Context, prodSKU st
 }
 
 func (repository *Repository) SaveProduct(ctx context.Context, p products.Product) (products.Product, error) {
-	ctx, cancel := context.WithTimeout(ctx, queryTimeout)
+	ctx, cancel := context.WithTimeout(ctx, sharedconstants.PostgresQueryTimeout)
 	defer cancel()
 
 	var result products.Product
-	resu := repository.DB().WithContext(ctx).Where(skuWhereClause, p.Sku).First(&result)
+	resu := repository.DB().WithContext(ctx).Where(sharedconstants.PostgresSKUWhereClause, p.Sku).First(&result)
 
 	if err := resu.Error; err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -178,7 +179,7 @@ func (repository *Repository) SaveProduct(ctx context.Context, p products.Produc
 	}
 
 	var afterSave products.Product
-	resul := repository.DB().WithContext(ctx).Where(skuWhereClause, p.Sku).First(&afterSave)
+	resul := repository.DB().WithContext(ctx).Where(sharedconstants.PostgresSKUWhereClause, p.Sku).First(&afterSave)
 
 	if err := resul.Error; err != nil {
 		return products.Product{}, fmt.Errorf(messages.ErrorOccurredFormat, err.Error())
@@ -188,11 +189,11 @@ func (repository *Repository) SaveProduct(ctx context.Context, p products.Produc
 }
 
 func (repository *Repository) UpdateProduct(ctx context.Context, p products.Product) (products.Product, error) {
-	ctx, cancel := context.WithTimeout(ctx, queryTimeout)
+	ctx, cancel := context.WithTimeout(ctx, sharedconstants.PostgresQueryTimeout)
 	defer cancel()
 
 	var result products.Product
-	resu := repository.DB().WithContext(ctx).Where(skuWhereClause, p.Sku).First(&result)
+	resu := repository.DB().WithContext(ctx).Where(sharedconstants.PostgresSKUWhereClause, p.Sku).First(&result)
 
 	if err := resu.Error; err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -204,14 +205,14 @@ func (repository *Repository) UpdateProduct(ctx context.Context, p products.Prod
 		return products.Product{}, fmt.Errorf(messages.SKUDoesNotExist)
 	}
 
-	res := repository.DB().WithContext(ctx).Model(products.Product{}).Where(skuWhereClause, p.Sku).Updates(p)
+	res := repository.DB().WithContext(ctx).Model(products.Product{}).Where(sharedconstants.PostgresSKUWhereClause, p.Sku).Updates(p)
 
 	if err := res.Error; err != nil {
 		return products.Product{}, fmt.Errorf(messages.ErrorOccurredFormat, err.Error())
 	}
 
 	var updatedResult products.Product
-	resul := repository.DB().WithContext(ctx).Where(skuWhereClause, p.Sku).First(&updatedResult)
+	resul := repository.DB().WithContext(ctx).Where(sharedconstants.PostgresSKUWhereClause, p.Sku).First(&updatedResult)
 
 	if err := resul.Error; err != nil {
 		return products.Product{}, fmt.Errorf(messages.ErrorOccurredFormat, err.Error())
