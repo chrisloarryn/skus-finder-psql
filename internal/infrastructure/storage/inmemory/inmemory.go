@@ -2,9 +2,11 @@ package inmemory
 
 import (
 	"context"
-	"fmt"
-	"github.com/skus-finder-psql/internal/core/domain/products"
+	"errors"
 	"time"
+
+	"github.com/skus-finder-psql/internal/core/domain/products"
+	"github.com/skus-finder-psql/internal/shared/messages"
 )
 
 // Repository is the struct when you choose the in memory storage
@@ -29,7 +31,7 @@ func (repository *Repository) FindProductBySKU(_ context.Context, prodSKU string
 			return prod, nil
 		}
 	}
-	return products.Product{}, fmt.Errorf("product SKU doesn't exist")
+	return products.Product{}, errors.New(messages.ProductSKUNotFound)
 }
 
 func (repository *Repository) SaveProduct(_ context.Context, p products.Product) (products.Product, error) {
@@ -38,7 +40,7 @@ func (repository *Repository) SaveProduct(_ context.Context, p products.Product)
 
 	_, exist := repository.list[p.Sku]
 	if exist {
-		return products.Product{}, fmt.Errorf("the product SKU already exists")
+		return products.Product{}, errors.New(messages.ProductSKUAlreadyExists)
 	}
 	repository.list[p.Sku] = p
 	return p, nil
@@ -49,7 +51,7 @@ func (repository *Repository) UpdateProduct(_ context.Context, p products.Produc
 
 	_, exist := repository.list[p.Sku]
 	if !exist {
-		return products.Product{}, fmt.Errorf("the product SKU does not exists")
+		return products.Product{}, errors.New(messages.ProductSKUDoesNotExist)
 	}
 	repository.list[p.Sku] = p
 	return p, nil
@@ -57,7 +59,7 @@ func (repository *Repository) UpdateProduct(_ context.Context, p products.Produc
 
 func (repository *Repository) DeleteProductBySKU(_ context.Context, prodSKU string) (bool, error) {
 	var found bool
-	for key, _ := range repository.list {
+	for key := range repository.list {
 		if key == prodSKU {
 			found = true
 			delete(repository.list, prodSKU)
@@ -67,7 +69,7 @@ func (repository *Repository) DeleteProductBySKU(_ context.Context, prodSKU stri
 	if found {
 		return true, nil
 	} else {
-		return false, fmt.Errorf("product SKU doesn't exist")
+		return false, errors.New(messages.ProductSKUNotFound)
 	}
 }
 

@@ -1,3 +1,9 @@
+.git
+.github
+.env
+.env.*
+!.env.example
+coverage.out
 sql
 .gitignore
 docker-compose.yml

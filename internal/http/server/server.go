@@ -1,6 +1,7 @@
 package server
 
 import (
+	"log"
 	"net/http"
 	"os"
 
@@ -9,21 +10,16 @@ import (
 	"github.com/skus-finder-psql/internal/infrastructure/dependencies"
 )
 
-type ServerHTTP struct {
-}
-
-const (
-	PORT_KEY = "PORT"
-)
+type ServerHTTP struct{}
 
 func Run(container dependencies.Container) {
 	r := gin.Default()
 
-	r.GET("/", pingpong)
-	r.GET("/ping", pingpong)
+	r.GET(rootPath, pingpong)
+	r.GET(pingPath, pingpong)
 
-	api := r.Group("/api")
-	v1 := api.Group("/v1")
+	api := r.Group(apiPath)
+	v1 := api.Group(apiV1Path)
 
 	findAllProductsHandler := handlers.NewFindAllProductsHandler(container)
 	createProductHandler := handlers.NewCreateProductHandler(container)
@@ -31,23 +27,25 @@ func Run(container dependencies.Container) {
 	updateProductHandler := handlers.NewUpdateProductHandler(container)
 	deleteOneProductHandler := handlers.NewDeleteOneProductHandler(container)
 
-	v1.GET("/products", findAllProductsHandler.GetAllProducts)
-	v1.POST("/products", createProductHandler.CreateProduct)
-	v1.GET("/products/:productSKU", getOneProductHandler.FindOneProduct)
-	v1.PATCH("/products/:productSKU", updateProductHandler.UpdateProduct)
-	v1.DELETE("/products/:productSKU", deleteOneProductHandler.DeleteOneProduct)
+	v1.GET(productsPath, findAllProductsHandler.GetAllProducts)
+	v1.POST(productsPath, createProductHandler.CreateProduct)
+	v1.GET(productSKUPath, getOneProductHandler.FindOneProduct)
+	v1.PATCH(productSKUPath, updateProductHandler.UpdateProduct)
+	v1.DELETE(productSKUPath, deleteOneProductHandler.DeleteOneProduct)
 
-	port := os.Getenv(PORT_KEY)
+	port := os.Getenv(portKey)
 
 	if len(port) == 0 {
-		port = "8088"
+		port = defaultPort
 	}
 
-	r.Run(":" + port)
+	if err := r.Run(listenAddrPrefx + port); err != nil {
+		log.Fatalf("start HTTP server: %v", err)
+	}
 }
 
 func pingpong(c *gin.Context) {
-	formatResponse(c, http.StatusOK, "pong", nil)
+	formatResponse(c, http.StatusOK, pongMessage, nil)
 }
 
 func formatResponse(ctx *gin.Context, sc int, msg string, data interface{}) {

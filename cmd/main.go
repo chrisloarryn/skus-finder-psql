@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	_ "github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/skus-finder-psql/internal/http/server"
 	"github.com/skus-finder-psql/internal/infrastructure/dependencies"
+	"log"
 	"os"
 )
 
@@ -14,7 +14,9 @@ func main() {
 
 	// load environment variables from .env file if environment is not set
 	if os.Getenv(dependencies.EnvironmentKey) == "" {
-		godotenv.Load()
+		if err := godotenv.Load(); err != nil {
+			log.Printf("warning: unable to load .env: %v", err)
+		}
 	}
 
 	container := dependencies.NewContainer()

@@ -1,34 +1,34 @@
-# syntax=docker/dockerfile:1
+# syntax=docker/dockerfile:1.7
 
-##
-## Build
-##
-FROM golang:1.18-buster AS build
+FROM --platform=$BUILDPLATFORM golang:1.26.1-bookworm AS deps
 
-WORKDIR /app
+WORKDIR /src
 
-COPY go.mod ./
-COPY go.sum ./
-RUN go mod download
+COPY go.mod go.sum ./
+
+RUN --mount=type=cache,target=/go/pkg/mod \
+	go mod download
+
+FROM deps AS build
 
 COPY . .
 
-RUN GOARCH=amd64 GOOS=linux go build -o /products-api cmd/main.go
+RUN --mount=type=cache,target=/go/pkg/mod \
+	--mount=type=cache,target=/root/.cache/go-build \
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+	go build -trimpath -buildvcs=false -ldflags="-s -w" -o /out/products-api ./cmd/main.go
 
-##
-## Deploy
-##
-FROM gcr.io/distroless/base-debian10
+FROM gcr.io/distroless/base-debian12:nonroot AS runtime
 
-ARG port
-ENV PORT ${port}
+ENV GIN_MODE=release
+ENV PORT=8088
 
-WORKDIR /
+WORKDIR /app
 
-COPY --from=build /products-api /products-api
-
-EXPOSE ${PORT}
+COPY --from=build --chown=nonroot:nonroot /out/products-api /app/products-api
 
 USER nonroot:nonroot
 
-ENTRYPOINT ["/products-api"]
+EXPOSE 8088
+
+ENTRYPOINT ["/app/products-api"]

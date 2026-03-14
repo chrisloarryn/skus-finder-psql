@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCreateProduct_Execute_ShouldCreateAProduct(t *testing.T) {
+func TestCreateProductExecuteShouldCreateAProduct(t *testing.T) {
 	t.Log("Should create a Product")
 	// Setup
 	controller := gomock.NewController(t)
@@ -42,7 +42,7 @@ func TestCreateProduct_Execute_ShouldCreateAProduct(t *testing.T) {
 	assert.NoError(t, err)
 }
 
-func TestCreateProduct_Execute_ShouldReturnAnError(t *testing.T) {
+func TestCreateProductExecuteShouldReturnAnError(t *testing.T) {
 	t.Log("Should return an error when try to create a product")
 	// Setup
 	controller := gomock.NewController(t)
@@ -72,7 +72,7 @@ func TestCreateProduct_Execute_ShouldReturnAnError(t *testing.T) {
 	assert.EqualError(t, err, customError.Error())
 }
 
-func TestCreateProduct_Execute_ShouldReturnAnErrorForInvalidNegative(t *testing.T) {
+func TestCreateProductExecuteShouldReturnAnErrorForInvalidNegative(t *testing.T) {
 	t.Log("Should return an error when try to create a product")
 	// Setup
 	controller := gomock.NewController(t)

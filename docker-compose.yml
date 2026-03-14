@@ -1,8 +1,9 @@
-version: '3.9'
-
 services:
   products-api:
-    build: .
+    build:
+      context: .
+      args:
+        port: 8088
     ports:
       - "8088:8088"
     environment:
@@ -20,24 +21,28 @@ services:
         condition: on-failure
     container_name: products-sku-api
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - some-net
   postgres:
-    image: postgres:14.0
+    build:
+      context: ./sql
+    image: skus-finder-psql-postgres:18.3
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
     ports:
       - "65432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     networks:
       - some-net
     container_name: products-sku-api-db
-#    volumes:
-#      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
-#      - ./data:/var/lib/postgresql/data
-#      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
 networks:
   some-net:
     driver: bridge

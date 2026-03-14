@@ -13,7 +13,7 @@ import (
 	"testing"
 )
 
-func TestFinderProductBySKU_Execute_ShouldReturnsAProductData(t *testing.T) {
+func TestFinderProductBySKUExecuteShouldReturnsAProductData(t *testing.T) {
 	t.Log("Should returns a product from his SKU")
 	// Setup
 	controller := gomock.NewController(t)
@@ -43,7 +43,7 @@ func TestFinderProductBySKU_Execute_ShouldReturnsAProductData(t *testing.T) {
 	assert.Equal(t, productResult, result)
 }
 
-func TestFinderProductBySKU_Execute_ShouldReturnsAnErrorFromRepository(t *testing.T) {
+func TestFinderProductBySKUExecuteShouldReturnsAnErrorFromRepository(t *testing.T) {
 	t.Log("Should returns an error from repository")
 	// Setup
 	controller := gomock.NewController(t)
@@ -64,7 +64,7 @@ func TestFinderProductBySKU_Execute_ShouldReturnsAnErrorFromRepository(t *testin
 	assert.Equal(t, products.Product{}, result)
 }
 
-func TestFinderProductBySKU_Execute_ShouldReturnsAnErrorForInvalidID(t *testing.T) {
+func TestFinderProductBySKUExecuteShouldReturnsAnErrorForInvalidID(t *testing.T) {
 	t.Log("Should returns an error for invalid ID")
 	// Setup
 	controller := gomock.NewController(t)

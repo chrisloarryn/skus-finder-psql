@@ -6,3 +6,4 @@ data
 .env.production
 .env
 .env.local
+coverage.out

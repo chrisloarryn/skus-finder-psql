@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestFinderAllProducts_Execute_ShouldReturnsAProductList(t *testing.T) {
+func TestFinderAllProductsExecuteShouldReturnsAProductList(t *testing.T) {
 	t.Log("Should returns a product list")
 	// Setup
 	controller := gomock.NewController(t)
@@ -46,7 +46,7 @@ func TestFinderAllProducts_Execute_ShouldReturnsAProductList(t *testing.T) {
 	assert.Equal(t, productsList, result)
 }
 
-func TestFinderAllProducts_Execute_ShouldReturnsAnErrorInRepository(t *testing.T) {
+func TestFinderAllProductsExecuteShouldReturnsAnErrorInRepository(t *testing.T) {
 	t.Log("Should returns a product list")
 	// Setup
 	controller := gomock.NewController(t)

@@ -3,10 +3,11 @@ package products
 import (
 	"context"
 	"fmt"
-	validation "github.com/go-ozzo/ozzo-validation"
-	"github.com/go-ozzo/ozzo-validation/is"
-	"github.com/jinzhu/gorm"
-	"regexp"
+	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/go-ozzo/ozzo-validation/v4/is"
+
+	"github.com/skus-finder-psql/internal/shared/messages"
+	"gorm.io/gorm"
 )
 
 // Product represents the product data
@@ -24,32 +25,28 @@ type Product struct {
 // ValidateProductID just validates the ID value shouldn't be negative
 func ValidateProductID(productSKU string) error {
 	if len(productSKU) < 1 {
-		return fmt.Errorf("invalid ID: %s", productSKU)
+		return fmt.Errorf(messages.InvalidIDFormat, productSKU)
 	}
 	return nil
 }
 
 // ValidatePrice validates the price value
 func ValidatePrice(price float64) error {
-	if price < 0 {
-		return fmt.Errorf("invalid price")
+	if price < negativePriceThreshold {
+		return fmt.Errorf(messages.InvalidPrice)
 	}
 	return nil
 }
 
 // ValidateProduct validates all field and required fields of product data
 func ValidateProduct(p Product) error {
-	// letter FAL- at the beginning and from 1000000 to 99999999
-	skuRegexp := regexp.MustCompile(`^FAL-\d{7,8}$`) // or `^[FAL]\d{7,8}$`
-
 	err := validation.ValidateStruct(&p,
-		validation.Field(&p.Sku, validation.Required, validation.Length(11, 12), validation.Match(skuRegexp)),
+		validation.Field(&p.Sku, validation.Required, validation.Length(skuMinLength, skuMaxLength), validation.Match(skuRegexp)),
 
-		validation.Field(&p.Name, validation.Required, validation.Length(3, 50)),
-		validation.Field(&p.Brand, validation.Required, validation.Length(3, 50)),
-		// price from 1.00 to 99999999.00
-		validation.Field(&p.Price, validation.Required, validation.Min(1.00), validation.Max(99999999.00)), // validation.Length(1.00, 99999999.00)),
-		validation.Field(&p.PrincipalImage, validation.Required, is.URL, validation.Required, validation.Length(3, 50)),
+		validation.Field(&p.Name, validation.Required, validation.Length(productTextMinLength, productTextMaxLength)),
+		validation.Field(&p.Brand, validation.Required, validation.Length(productTextMinLength, productTextMaxLength)),
+		validation.Field(&p.Price, validation.Required, validation.Min(productPriceMin), validation.Max(productPriceMax)),
+		validation.Field(&p.PrincipalImage, validation.Required, is.URL, validation.Required, validation.Length(productTextMinLength, productTextMaxLength)),
 	)
 
 	if err != nil {
@@ -57,7 +54,7 @@ func ValidateProduct(p Product) error {
 	}
 
 	if len(p.Name) == 0 {
-		return fmt.Errorf("name couldn't be empty")
+		return fmt.Errorf(messages.NameCouldNotBeEmpty)
 	}
 
 	if err := ValidatePrice(p.Price); err != nil {

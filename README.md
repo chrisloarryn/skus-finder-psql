@@ -2,100 +2,121 @@
 
 [![Run tests](https://github.com/chrisloarryn/skus-finder-psql/actions/workflows/test.yaml/badge.svg)](https://github.com/chrisloarryn/skus-finder-psql/actions/workflows/test.yaml)
 
-### Specifications
+REST API to manage products by SKU. The service supports create, list, get by SKU, update and delete operations, and it can run with an in-memory repository or PostgreSQL persistence.
 
-``To execute, needs:``
+## Updated stack
 
-### Development
+- Go `1.26.1` with `toolchain go1.26.1`
+- CI matrix on Go `1.25.x` and `1.26.x`
+- Gin `v1.12.0`
+- Gorm `v1.31.1`
+- PostgreSQL driver `v1.6.0`
+- MySQL driver `v1.6.0`
+- Testify `v1.11.1`
+- Ozzo Validation `v4.3.0`
+- PostgreSQL container `18.3`
 
-- docker desktop/docker
-- For easy to use and easy to start, command to execute api will be describe below in the "Build and execution instructions" section.
-- NOW: if you do not want to use bd from docker compose, set environment variables in .env file (for running locally)
+## Run with Docker Compose
 
+Requirements:
 
-### Build and execution instructions
+- Docker Desktop or Docker Engine with Compose
 
-```docker-compose up -d --build```
+Start the API and PostgreSQL:
 
-| Command | Description                              |
-|---------|------------------------------------------|
-| -d      | for detach and run API in the background |
-| --build | to force rebuild of api                  |
+```bash
+docker compose up --build
+```
 
-### Production
+Services:
 
-``a postgres db will be configured, otherwise take following default values:``
+- API: `http://localhost:8088`
+- PostgreSQL: `localhost:65432`
 
-````shell
+The compose setup builds both Dockerfiles in the repository:
+
+- Root `Dockerfile`: hardened multi-stage build with Go `1.26.1`, distroless runtime and non-root execution
+- `sql/Dockerfile`: PostgreSQL `18.3` with `init.sql` and `postgres` user
+
+## Run locally without Docker
+
+By default the app uses the in-memory repository. If `ENVIRONMENT=PRODUCTION`, it connects to PostgreSQL and runs `AutoMigrate` for the `products` table.
+
+1. Copy `.env.example` to `.env` and adjust values if needed.
+2. Set the variables for PostgreSQL or leave `ENVIRONMENT` empty to use the in-memory repository.
+3. Run the API:
+
+```bash
+go run ./cmd/main.go
+```
+
+Useful database variables:
+
+```bash
+ENVIRONMENT=PRODUCTION
+PORT=8088
 DB_HOST=localhost
-DB_PORT=65432/5432
-DB_DATABASE=postgres
+DB_PORT=65432
+DB_NAME=postgres
 DB_USER=postgres
 DB_PASSWORD=postgres
-````
+```
 
-### Problem
+## Quality checks
 
-``Designing and implementing an application that allows to store new product, list all of them, retrieve a product by its SKU, update it and delete it.
-``
+```bash
+go vet ./...
+go test ./...
+```
 
-### Description
+Static analysis and security checks used in the repository:
 
-``The information of a product that we want to store is: ``
+```bash
+golangci-lint run ./...
+gosec ./...
+govulncheck ./...
+trivy config --severity HIGH,CRITICAL --misconfig-scanners dockerfile .
+trivy fs --scanners vuln,secret,misconfig --severity HIGH,CRITICAL .
+```
 
-| Field           | Description                                                                                                                                             | Data allowed                                                | Required |
-|-----------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------|----------|
-| SKU             | Internal stock-keeping unit. It is the candidate identifier of a product                                                                                | Min: FAL-1000000 Max: FAL-99999999                          | Y        |
-| Name            | Short description of the product                                                                                                                        | Must not be blank Min size: 3 Max size: 50                  | Y        |
-| Brand           | Name of the brand                                                                                                                                       | Must not be blank Min size: 3 Max size: 50                  | Y        |
-| Size            | Size of the product                                                                                                                                     | Must not be blank                                           | N        |
-| Price           | Sell price                                                                                                                                              | Min: 1.00                                  Max: 99999999.00 | Y        |
-| Principal image | URL of the principal image of the product, which is used in catalogs and is the first image that is showed to customers when access product detail page | URL format                                                  | Y        |
-| Other Images    | List of images of the product.                                                                                                                          | URL format                                                  | N        |
+## CI workflow
 
-### Additional Configurations
+GitHub Actions runs on pushes and pull requests for `main` and `develop`, and it also supports manual execution with `workflow_dispatch`. Workflow concurrency is enabled per workflow and ref to avoid overlapping runs on the same branch.
 
-- The designed endpoints must use proper HTTP verb, REST naming conventions and return correct HTTP code.
-- The application must not expose technology detail, such as language, framework, libraries, and so on, when an
-  exception is thrown.
+## Product rules
 
-| SKU           | Name                       | Brand       | Size | Price     | Image URLs |
-|---------------|----------------------------|-------------|------|-----------|------------|
-| FAL-8406270   | 500 Zapatilla Urbana Mujer | New Balance | 37   | 42990.00  | - https:// |
-| FAL-881952283 | Bicicleta Baltoro Aro 29   | Jeep        | ST   | 399990.00 | - https:// |
-| FAL-881898502 | Camisa Manga Corta Hombre  | Basement    | M    | 24990.00  | - https:// |
+| Field | Description | Allowed values | Required |
+|---|---|---|---|
+| SKU | Candidate identifier of the product | `FAL-1000000` to `FAL-99999999` | Yes |
+| Name | Short description | Min length `3`, max length `50` | Yes |
+| Brand | Brand name | Min length `3`, max length `50` | Yes |
+| Size | Product size | Optional text | No |
+| Price | Sell price | `1.00` to `99999999.00` | Yes |
+| Principal image | Main catalog image | Valid URL | Yes |
+| Other images | Additional images | Valid URL list | No |
 
-### Technology Required
+Sample products:
 
-- [x] Golang
-- [x] Go mod
-- [x] Gin Framework
-- [x] Gorm
-- [x] Database persistence
-- [x] InMemory persistence
-- [x] Unit testing (PENDING IMPROVEMENTS)
-- [x] Validations of field size/length DONE [[proposal package\ done]](github.com/go-ozzo/ozzo-validation/v4)
+| SKU | Name | Brand | Size | Price |
+|---|---|---|---|---|
+| FAL-8406270 | 500 Zapatilla Urbana Mujer | New Balance | 37 | 42990.00 |
+| FAL-881952283 | Bicicleta Baltoro Aro 29 | Jeep | ST | 399990.00 |
+| FAL-881898502 | Camisa Manga Corta Hombre | Basement | M | 24990.00 |
 
-#### extras
+## Architecture notes
 
-- [x] gomock (for mocks generation) [[link]](https://github.com/golang/mock)
-- [x] testify (for assertions) [[link]](https://github.com/stretchr/testify)
-- [x] ozzo-validation (for validations) [[link]](github.com/go-ozzo/ozzo-validation/v4)
+- HTTP layer built with Gin
+- Domain validations implemented with Ozzo Validation
+- Persistence abstraction through `products.Repository`
+- PostgreSQL persistence with Gorm
+- In-memory repository available for local development and tests
+- Unit tests based on `gomock` and `testify`
 
-### Deliverables
+## Endpoints
 
-- The only deliverable is the source code of the solution; it must be published at a GIT version control hosting such
-  as: GitHub, GitLab, Bitbucket or other. The repository must have a
-  README.md file which contains:
-    - Build and execution instructions
-    - Brief explanation about architectural and technological decisions made for the application.
-
-### Endpoints detailed (common REST API)
-
-- GET /ping: returns a "pong" message
-- GET /api/v1/products: Show all products stored.
-- POST /api/v1/products: Allow to create a product.
-- GET /api/v1/products/{productSKU}: Get details for a specific product by its product sku.
-- PATCH /api/v1/products/{productSKU}: Update a specific product by its product sku.
-- DELETE /api/v1/products/{productSKU}: Delete a specific product by its product sku.
-    
+- `GET /ping`
+- `GET /api/v1/products`
+- `POST /api/v1/products`
+- `GET /api/v1/products/{productSKU}`
+- `PATCH /api/v1/products/{productSKU}`
+- `DELETE /api/v1/products/{productSKU}`
